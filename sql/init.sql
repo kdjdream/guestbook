@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS guestbook
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE guestbook;
+
+CREATE TABLE IF NOT EXISTS guestbook (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  message VARCHAR(500) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO guestbook (name, message)
+VALUES ('홍길동', '방명록 테스트입니다.');

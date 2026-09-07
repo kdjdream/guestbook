@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js 방명록</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>📝 방명록</h1>
+
+    <section class="write-box">
+      <h2>방명록 작성</h2>
+
+      <form action="/guestbook" method="post">
+        <label for="name">이름</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          maxlength="50"
+          required
+          placeholder="이름을 입력하세요"
+        >
+
+        <label for="message">내용</label>
+        <textarea
+          id="message"
+          name="message"
+          maxlength="500"
+          required
+          placeholder="방명록 내용을 입력하세요"
+        ></textarea>
+
+        <button type="submit">등록하기</button>
+      </form>
+    </section>
+
+    <section class="list-box">
+      <h2>방명록 목록</h2>
+
+      <% if (rows.length === 0) { %>
+        <p class="empty">아직 등록된 방명록이 없습니다.</p>
+      <% } %>
+
+      <% rows.forEach(function(row) { %>
+        <article class="guestbook-item">
+          <div class="item-header">
+            <strong><%= row.name %></strong>
+            <span><%= new Date(row.created_at).toLocaleString("ko-KR") %></span>
+          </div>
+          <p><%= row.message %></p>
+        </article>
+      <% }) %>
+    </section>
+  </main>
+</body>
+</html>

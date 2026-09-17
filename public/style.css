@@ -61,6 +61,10 @@ button {
 }
 
 .guestbook-item {
+  display: grid;
+  grid-template-columns: minmax(80px, 120px) minmax(0, 1fr) max-content;
+  align-items: start;
+  gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid #ddd;
 }
@@ -69,18 +73,15 @@ button {
   border-bottom: 0;
 }
 
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.item-header span {
+.guestbook-item span {
   color: #777;
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .guestbook-item p {
+  min-width: 0;
+  margin: 0;
   white-space: pre-wrap;
   line-height: 1.6;
 }

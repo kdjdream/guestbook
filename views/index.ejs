@@ -47,11 +47,9 @@
 
         <% rows.forEach(function(row) { %>
           <article class="guestbook-item">
-            <div class="item-header">
-              <strong><%= row.name %></strong>
-              <span><%= new Date(row.created_at).toLocaleString("ko-KR") %></span>
-            </div>
+            <strong><%= row.name %></strong>
             <p><%= row.message %></p>
+            <span><%= new Date(row.created_at).toLocaleString("ko-KR") %></span>
           </article>
         <% }) %>
       </div>
@@ -74,8 +72,6 @@
         const item = document.createElement("article");
         item.className = "guestbook-item";
 
-        const header = document.createElement("div");
-        header.className = "item-header";
         const name = document.createElement("strong");
         name.textContent = row.name;
         const date = document.createElement("span");
@@ -83,8 +79,7 @@
         const message = document.createElement("p");
         message.textContent = row.message;
 
-        header.append(name, date);
-        item.append(header, message);
+        item.append(name, message, date);
         fragment.append(item);
       });
 

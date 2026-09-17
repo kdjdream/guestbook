@@ -1,9 +1,13 @@
 require("dotenv").config();
 
+const http = require("http");
 const express = require("express");
 const mysql = require("mysql2/promise");
+const { Server } = require("socket.io");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const PORT = Number(process.env.PORT) || 3000;
 
 app.set("view engine", "ejs");
@@ -16,14 +20,12 @@ const pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT) || 3306,
   user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "kdj8974",
+  password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "guestbook",
   waitForConnections: true,
   connectionLimit: 10,
   charset: "utf8mb4"
 });
-
-
 
 
 
@@ -44,6 +46,16 @@ async function initDatabase() {
   }
 }
 
+async function getGuestbookRows() {
+  const [rows] = await pool.query(`
+    SELECT id, name, message, created_at
+    FROM guestbook
+    ORDER BY id DESC
+  `);
+
+  return rows;
+}
+
 
 
 
@@ -52,11 +64,7 @@ async function initDatabase() {
 
 app.get("/", async (req, res) => {
   try {
-    const [rows] = await pool.query(`
-      SELECT id, name, message, created_at
-      FROM guestbook
-      ORDER BY id DESC
-    `);
+    const rows = await getGuestbookRows();
 
     res.render("index", {
       rows,
@@ -65,6 +73,16 @@ app.get("/", async (req, res) => {
   } catch (err) {
     console.error("조회 오류:", err);
     res.status(500).send("데이터베이스 조회 중 오류가 발생했습니다.");
+  }
+});
+
+app.get("/api/guestbook", async (req, res) => {
+  try {
+    const rows = await getGuestbookRows();
+    res.json(rows);
+  } catch (err) {
+    console.error("API 조회 오류:", err);
+    res.status(500).json({ error: "방명록을 조회할 수 없습니다." });
   }
 });
 
@@ -101,7 +119,7 @@ async function start() {
   try {
     await initDatabase();
 
-    app.listen(PORT, "0.0.0.0", () => {
+    server.listen(PORT, "0.0.0.0", () => {
       console.log(`서버 실행: http://localhost:${PORT}`);
       console.log(`DB: ${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || 3306}`);
     });

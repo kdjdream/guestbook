@@ -40,20 +40,74 @@
     <section class="list-box">
       <h2>방명록 목록</h2>
 
-      <% if (rows.length === 0) { %>
-        <p class="empty">아직 등록된 방명록이 없습니다.</p>
-      <% } %>
+      <div id="guestbook-list" data-version="<%= rows.map(function(row) { return row.id; }).join(",") %>">
+        <% if (rows.length === 0) { %>
+          <p class="empty">아직 등록된 방명록이 없습니다.</p>
+        <% } %>
 
-      <% rows.forEach(function(row) { %>
-        <article class="guestbook-item">
-          <div class="item-header">
-            <strong><%= row.name %></strong>
-            <span><%= new Date(row.created_at).toLocaleString("ko-KR") %></span>
-          </div>
-          <p><%= row.message %></p>
-        </article>
-      <% }) %>
+        <% rows.forEach(function(row) { %>
+          <article class="guestbook-item">
+            <div class="item-header">
+              <strong><%= row.name %></strong>
+              <span><%= new Date(row.created_at).toLocaleString("ko-KR") %></span>
+            </div>
+            <p><%= row.message %></p>
+          </article>
+        <% }) %>
+      </div>
     </section>
   </main>
+  <script>
+    const list = document.getElementById("guestbook-list");
+
+    function renderRows(rows) {
+      const fragment = document.createDocumentFragment();
+
+      if (rows.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = "아직 등록된 방명록이 없습니다.";
+        fragment.append(empty);
+      }
+
+      rows.forEach((row) => {
+        const item = document.createElement("article");
+        item.className = "guestbook-item";
+
+        const header = document.createElement("div");
+        header.className = "item-header";
+        const name = document.createElement("strong");
+        name.textContent = row.name;
+        const date = document.createElement("span");
+        date.textContent = new Date(row.created_at).toLocaleString("ko-KR");
+        const message = document.createElement("p");
+        message.textContent = row.message;
+
+        header.append(name, date);
+        item.append(header, message);
+        fragment.append(item);
+      });
+
+      list.replaceChildren(fragment);
+    }
+
+    async function refreshGuestbook() {
+      try {
+        const response = await fetch("/api/guestbook", { cache: "no-store" });
+        if (!response.ok) return;
+
+        const rows = await response.json();
+        const version = rows.map((row) => row.id).join(",");
+        if (version === list.dataset.version) return;
+
+        renderRows(rows);
+        list.dataset.version = version;
+      } catch (error) {
+        console.error("방명록 자동 갱신 오류:", error);
+      }
+    }
+
+    window.setInterval(refreshGuestbook, 5000);
+  </script>
 </body>
 </html>

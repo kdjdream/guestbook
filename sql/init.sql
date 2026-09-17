@@ -1,8 +1,8 @@
-CREATE DATABASE IF NOT EXISTS guestbook
+CREATE DATABASE IF NOT EXISTS factory
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE guestbook;
+USE factory;
 
 CREATE TABLE IF NOT EXISTS guestbook (
   id INT AUTO_INCREMENT PRIMARY KEY,
